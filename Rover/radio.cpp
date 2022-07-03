@@ -127,18 +127,21 @@ void Rover::rudder_arm_disarm_check()
 
 void Rover::read_radio()
 {
-    if (!rc().read_input()) {
-        // check if we lost RC link
-        radio_failsafe_check(channel_throttle->get_radio_in());
-        return;
-    }
+    // hal.console->printf(".");
+    print_test();
+    // if (!rc().read_input())
+    // {
+    //     // check if we lost RC link
+    //     radio_failsafe_check(channel_throttle->get_radio_in());
+    //     return;
+    // }
 
-    failsafe.last_valid_rc_ms = AP_HAL::millis();
-    // check that RC value are valid
-    radio_failsafe_check(channel_throttle->get_radio_in());
+    // failsafe.last_valid_rc_ms = AP_HAL::millis();
+    // // check that RC value are valid
+    // radio_failsafe_check(channel_throttle->get_radio_in());
 
-    // check if we try to do RC arm/disarm
-    rudder_arm_disarm_check();
+    // // check if we try to do RC arm/disarm
+    // rudder_arm_disarm_check();
 }
 
 void Rover::radio_failsafe_check(uint16_t pwm)

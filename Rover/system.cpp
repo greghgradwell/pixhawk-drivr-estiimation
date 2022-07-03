@@ -48,7 +48,8 @@ void Rover::init_ardupilot()
     barometer.init();
 
     // setup telem slots with serial ports
-    gcs().setup_uarts();
+    // gcs().setup_uarts();
+    setup_telem();
 
 #if OSD_ENABLED == ENABLED
     osd.init();
@@ -176,7 +177,7 @@ void Rover::startup_ground(void)
 
     // we don't want writes to the serial port to cause us to pause
     // so set serial ports non-blocking once we are ready to drive
-    serial_manager.set_blocking_writes_all(false);
+    serial_manager.set_blocking_writes_all(true);
 }
 
 // update the ahrs flyforward setting which can allow

@@ -289,6 +289,10 @@ private:
     // GCS_Mavlink.cpp
     void send_wheel_encoder_distance(mavlink_channel_t chan);
 
+    // Kart.cpp
+    void print_test();
+    void setup_telem();
+
     // Log.cpp
     void Log_Write_Attitude();
     void Log_Write_Depth();
