@@ -23,6 +23,7 @@
  * along with this code.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <AP_HAL/AP_HAL.h>
+#include <AP_NavEKF3/AP_NavEKF3.h>
 
 #ifndef _UBXINTERPRETER_H_
 #define _UBXINTERPRETER_H_
@@ -41,6 +42,7 @@ class UbxInterpreter
 public:
     UbxInterpreter();
     // ---------------- TX -------------------
+    void packPixhawkMessage();
     void setHeaderValues(uint8_t msg_class, uint8_t msg_id, uint16_t payload_length);
     void prepareMessage();
     int writeMessage(AP_HAL::UARTDriver *uart);

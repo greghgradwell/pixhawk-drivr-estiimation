@@ -293,7 +293,7 @@ private:
     void send_wheel_encoder_distance(mavlink_channel_t chan);
 
     // Kart.cpp
-    void print_test();
+    void send_kart_message();
     void setup_telem();
 
     // Log.cpp

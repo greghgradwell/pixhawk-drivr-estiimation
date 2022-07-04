@@ -1,9 +1,28 @@
 #include "UbxInterpreter.h"
+#include "definitions.h"
+
+constexpr float kRad2DegE2 = 5729.57795f;
 
 UbxInterpreter::UbxInterpreter()
 {
     tx_buffer_[0] = START_BYTE_1;
     tx_buffer_[1] = START_BYTE_2;
+}
+
+void UbxInterpreter::packPixhawkMessage()
+{
+    setHeaderValues(0x11, 0x00, 15);
+    Vector3f attitude;
+    getEulerAngles(Vector3f & attitude);
+    Location loc;
+    getLLH(&loc);
+
+    _ubx.packValue(static_cast<int16_t>(attitude.x * kRad2DegE2), 0);
+    _ubx.packValue(static_cast<int16_t>(attitude.y * kRad2DegE2), 2);
+    _ubx.packValue(static_cast<uint16_t>(attitude.z * kRad2DegE2), 4);
+    _ubx.packValue(loc.lat, 6);
+    _ubx.packValue(loc.lon, 10);
+    _ubx.packValue(3, 14);
 }
 
 void UbxInterpreter::setHeaderValues(uint8_t msg_class, uint8_t msg_id, uint16_t payload_length)
