@@ -57,6 +57,7 @@
 #include "GCS_Rover.h"
 #include "AP_Rally.h"
 #include "RC_Channel.h"                  // RC Channel Library
+#include "ubx_interpreter.h"
 
 class Rover : public AP_Vehicle {
 public:
@@ -219,6 +220,8 @@ private:
     ModeSmartRTL mode_smartrtl;
     ModeFollow mode_follow;
     ModeSimple mode_simple;
+
+    UbxInterpreter _ubx;
 
     // cruise throttle and speed learning
     typedef struct {
