@@ -6,8 +6,7 @@
 void Rover::set_servos(void)
 {
     // hal.console->printf(".");
-
-    print_test();
+    send_kart_message();
     // send output signals to motors
     // if (motor_test) {
     //     motor_test_output();

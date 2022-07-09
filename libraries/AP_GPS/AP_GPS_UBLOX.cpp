@@ -44,6 +44,10 @@
 // the uart bandwidth needed and allow for higher latency
 #define RTK_MB_RTCM_RATE 1
 
+#ifndef GPS_MOVING_BASELINE
+#define GPS_MOVING_BASELINE true
+#endif
+
 // use this to enable debugging of moving baseline configs
 #define UBLOX_MB_DEBUGGING 0
 
@@ -75,21 +79,20 @@ extern const AP_HAL::HAL& hal;
  # define MB_Debug(fmt, args ...)
 #endif
 
-AP_GPS_UBLOX::AP_GPS_UBLOX(AP_GPS &_gps, AP_GPS::GPS_State &_state, AP_HAL::UARTDriver *_port, AP_GPS::GPS_Role _role) :
-    AP_GPS_Backend(_gps, _state, _port),
-    _next_message(STEP_PVT),
-    _ublox_port(255),
-    _unconfigured_messages(CONFIG_ALL),
-    _hardware_generation(UBLOX_UNKNOWN_HARDWARE_GENERATION),
-    next_fix(AP_GPS::NO_FIX),
-    noReceivedHdop(true),
-    role(_role)
-{
-    // stop any config strings that are pending
-    gps.send_blob_start(state.instance, nullptr, 0);
+ AP_GPS_UBLOX::AP_GPS_UBLOX(AP_GPS &_gps, AP_GPS::GPS_State &_state, AP_HAL::UARTDriver *_port, AP_GPS::GPS_Role _role) : AP_GPS_Backend(_gps, _state, _port),
+                                                                                                                          _next_message(STEP_PVT),
+                                                                                                                          _ublox_port(255),
+                                                                                                                          _unconfigured_messages(CONFIG_ALL),
+                                                                                                                          _hardware_generation(UBLOX_F9),
+                                                                                                                          next_fix(AP_GPS::NO_FIX),
+                                                                                                                          noReceivedHdop(true),
+                                                                                                                          role(_role)
+ {
+     // stop any config strings that are pending
+     gps.send_blob_start(state.instance, nullptr, 0);
 
-    // start the process of updating the GPS rates
-    _request_next_config();
+     // start the process of updating the GPS rates
+     _request_next_config();
 
 #if CONFIGURE_PPS_PIN
     _unconfigured_messages |= CONFIG_TP5;
@@ -2031,5 +2034,6 @@ bool AP_GPS_UBLOX::is_healthy(void) const
 // return true if GPS is capable of F9 config
 bool AP_GPS_UBLOX::supports_F9_config(void) const
 {
-    return _hardware_generation == UBLOX_F9 && _hardware_generation != UBLOX_UNKNOWN_HARDWARE_GENERATION;
+    return true;
+    // return _hardware_generation == UBLOX_F9 && _hardware_generation != UBLOX_UNKNOWN_HARDWARE_GENERATION;
 }

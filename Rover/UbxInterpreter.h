@@ -23,7 +23,7 @@
  * along with this code.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <AP_HAL/AP_HAL.h>
-#include <AP_NavEKF3/AP_NavEKF3.h>
+#include <AP_Vehicle/AP_Vehicle.h> // needed for AHRS build
 
 #ifndef _UBXINTERPRETER_H_
 #define _UBXINTERPRETER_H_
@@ -42,7 +42,7 @@ class UbxInterpreter
 public:
     UbxInterpreter();
     // ---------------- TX -------------------
-    void packPixhawkMessage();
+    void packPixhawkMessage(const Vector3f &attitude, const Location &loc, const uint8_t fix);
     void setHeaderValues(uint8_t msg_class, uint8_t msg_id, uint16_t payload_length);
     void prepareMessage();
     int writeMessage(AP_HAL::UARTDriver *uart);
@@ -62,5 +62,6 @@ private:
     uint8_t tx_buffer_[kBufferSize];
     uint16_t tx_payload_length_ = 0;
     int tx_buffer_write_length_ = 0;
+    uint8_t _packet_counter = 0;
 };
 #endif

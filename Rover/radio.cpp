@@ -127,8 +127,6 @@ void Rover::rudder_arm_disarm_check()
 
 void Rover::read_radio()
 {
-    // hal.console->printf(".");
-    print_test();
     // if (!rc().read_input())
     // {
     //     // check if we lost RC link

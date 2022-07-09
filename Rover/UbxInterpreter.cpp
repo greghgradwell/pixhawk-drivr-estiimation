@@ -1,5 +1,6 @@
 #include "UbxInterpreter.h"
-#include "definitions.h"
+// #include "definitions.h"
+// #include <AP_NavEKF3/AP_NavEKF3.h>
 
 constexpr float kRad2DegE2 = 5729.57795f;
 
@@ -9,20 +10,20 @@ UbxInterpreter::UbxInterpreter()
     tx_buffer_[1] = START_BYTE_2;
 }
 
-void UbxInterpreter::packPixhawkMessage()
+void UbxInterpreter::packPixhawkMessage(const Vector3f &attitude, const Location &loc, const uint8_t fix)
 {
     setHeaderValues(0x11, 0x00, 15);
-    Vector3f attitude;
-    getEulerAngles(Vector3f & attitude);
-    Location loc;
-    getLLH(&loc);
-
-    _ubx.packValue(static_cast<int16_t>(attitude.x * kRad2DegE2), 0);
-    _ubx.packValue(static_cast<int16_t>(attitude.y * kRad2DegE2), 2);
-    _ubx.packValue(static_cast<uint16_t>(attitude.z * kRad2DegE2), 4);
-    _ubx.packValue(loc.lat, 6);
-    _ubx.packValue(loc.lon, 10);
-    _ubx.packValue(3, 14);
+    // Vector3f attitude;
+    // NavEKF3::getEulerAngles(attitude);
+    // Location loc;
+    // NavEKF3::getLLH(loc);
+    packValue(static_cast<int16_t>(attitude.x * kRad2DegE2), 0);
+    packValue(static_cast<int16_t>(attitude.y * kRad2DegE2), 2);
+    packValue(static_cast<uint16_t>(attitude.z * kRad2DegE2), 4);
+    packValue(loc.lat, 6);
+    packValue(loc.lng, 10);
+    packValue(fix, 14);
+    prepareMessage();
 }
 
 void UbxInterpreter::setHeaderValues(uint8_t msg_class, uint8_t msg_id, uint16_t payload_length)
@@ -59,11 +60,11 @@ void UbxInterpreter::printWriteBuffer()
     int i = 0;
     for (; i < tx_buffer_write_length_ - 1; i++)
     {
-        hal.console->print(tx_buffer_[i], output_type);
-        hal.console->print(",");
+        hal.console->printf("%d,", tx_buffer_[i]);
     }
-    hal.console->print(tx_buffer_[i]);
+    hal.console->printf("%d\n", tx_buffer_[i]);
 }
+
 void UbxInterpreter::calculateChecksum(uint8_t *payload, int payload_length, uint8_t &chka, uint8_t &chkb)
 {
     chka = 0;

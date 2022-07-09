@@ -57,7 +57,7 @@
 #include "GCS_Rover.h"
 #include "AP_Rally.h"
 #include "RC_Channel.h"                  // RC Channel Library
-#include "ubx_interpreter.h"
+#include "UbxInterpreter.h"
 
 class Rover : public AP_Vehicle {
 public:
