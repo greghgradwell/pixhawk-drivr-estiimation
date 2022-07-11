@@ -222,6 +222,7 @@ private:
     ModeSimple mode_simple;
 
     UbxInterpreter _ubx;
+    bool _kart_port_ready = false;
 
     // cruise throttle and speed learning
     typedef struct {

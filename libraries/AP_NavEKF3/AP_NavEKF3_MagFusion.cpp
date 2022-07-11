@@ -262,13 +262,16 @@ void NavEKF3_core::SelectMagFusion()
     if (yaw_source == AP_NavEKF_Source::SourceYaw::GPS || yaw_source == AP_NavEKF_Source::SourceYaw::GPS_COMPASS_FALLBACK) {
         bool have_fused_gps_yaw = false;
         if (storedYawAng.recall(yawAngDataDelayed,imuDataDelayed.time_ms)) {
-            if (tiltAlignComplete && (!yawAlignComplete || yaw_source_reset)) {
+            if (tiltAlignComplete && (!yawAlignComplete || yaw_source_reset))
+            {
                 alignYawAngle(yawAngDataDelayed);
                 yaw_source_reset = false;
                 have_fused_gps_yaw = true;
                 lastSynthYawTime_ms = imuSampleTime_ms;
                 last_gps_yaw_fuse_ms = imuSampleTime_ms;
-            } else if (tiltAlignComplete && yawAlignComplete) {
+            }
+            else if (tiltAlignComplete && yawAlignComplete)
+            {
                 have_fused_gps_yaw = fuseEulerYaw(yawFusionMethod::GPS);
                 if (have_fused_gps_yaw) {
                     last_gps_yaw_fuse_ms = imuSampleTime_ms;

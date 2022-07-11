@@ -707,8 +707,10 @@ void NavEKF3_core::readGpsYawData()
     float yaw_deg, yaw_accuracy_deg;
     uint32_t yaw_time_ms;
     if (gps.status(selected_gps) >= AP_DAL_GPS::GPS_OK_FIX_3D &&
-        dal.gps().gps_yaw_deg(selected_gps, yaw_deg, yaw_accuracy_deg, yaw_time_ms) &&
-        yaw_time_ms != yawMeasTime_ms) {
+        gps.gps_yaw_deg(selected_gps, yaw_deg, yaw_accuracy_deg, yaw_time_ms) &&
+        yaw_time_ms != yawMeasTime_ms)
+    {
+
         // GPS modules are rather too optimistic about their
         // accuracy. Set to min of 5 degrees here to prevent
         // the user constantly receiving warnings about high
@@ -1002,7 +1004,6 @@ void NavEKF3_core::writeEulerYawAngle(float yawAngle, float yawAngleErr, uint32_
         return;
     }
     yawAngDataNew.time_ms = timeStamp_ms;
-
     storedYawAng.push(yawAngDataNew);
 
     yawMeasTime_ms = timeStamp_ms;

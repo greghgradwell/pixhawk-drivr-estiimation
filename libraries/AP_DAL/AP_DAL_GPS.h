@@ -93,6 +93,7 @@ public:
     }
 
     bool gps_yaw_deg(uint8_t instance, float &yaw_deg, float &accuracy_deg, uint32_t &time_ms) const {
+
         yaw_deg = _RGPJ[instance].yaw_deg;
         accuracy_deg = _RGPJ[instance].yaw_accuracy_deg;
         time_ms = _RGPJ[instance].yaw_deg_time_ms;

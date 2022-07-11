@@ -48,8 +48,7 @@ void Rover::init_ardupilot()
     barometer.init();
 
     // setup telem slots with serial ports
-    // gcs().setup_uarts();
-    setup_telem();
+    gcs().setup_uarts();
 
 #if OSD_ENABLED == ENABLED
     osd.init();
@@ -144,6 +143,7 @@ void Rover::init_ardupilot()
         rover.g2.mis_done_behave.set_default(ModeAuto::Mis_Done_Behave::MIS_DONE_BEHAVE_LOITER);
     }
 
+    setup_telem();
     // flag that initialisation has completed
     initialised = true;
 }
