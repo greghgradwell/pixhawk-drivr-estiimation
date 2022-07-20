@@ -41,11 +41,11 @@ void Rover::send_kart_message(void)
         Location loc;
         ahrs.get_secondary_position(loc);
         uint8_t fix = static_cast<uint8_t>(rover.gps.status(1));
-        if (fix > 0)
-        {
-            _ubx.packPixhawkMessage(attitude, loc, fix);
-            _ubx.writeMessage(hal.serial(2));
-            // hal.console->printf("yaw: %.1f\r\n", attitude.z * 180.f / M_PI);
-        }
+        // if (fix > 0)
+        // {
+        _ubx.packPixhawkMessage(attitude, loc, fix);
+        _ubx.writeMessage(hal.serial(2));
+        // hal.console->printf("yaw: %.1f\r\n", attitude.z * 180.f / M_PI);
+            // }
     }
 }
