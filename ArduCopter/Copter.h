@@ -170,6 +170,7 @@
 #endif
 
 #include "mode.h"
+#include "UbxInterpreter.h"
 
 class Copter : public AP_Vehicle {
 public:
@@ -221,6 +222,13 @@ public:
     Copter(void);
 
 private:
+    // DRIVR
+    void setup_telem();
+    void send_drivr_message();
+    UbxInterpreter _ubx;
+    bool _drivr_port_ready = false;
+    int _drivr_count = 0;
+    int _seconds_count = 0;
 
     // key aircraft parameters passed to multiple libraries
     AP_Vehicle::MultiCopter aparm;

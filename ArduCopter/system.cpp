@@ -212,6 +212,8 @@ void Copter::init_ardupilot()
         set_mode(Mode::Number::STABILIZE, ModeReason::UNAVAILABLE);
     }
 
+    setup_telem();
+
     // flag that initialisation has completed
     ap.initialised = true;
 }
