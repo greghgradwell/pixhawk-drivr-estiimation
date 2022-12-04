@@ -50,9 +50,9 @@ void Rover::init_ardupilot()
     // setup telem slots with serial ports
     gcs().setup_uarts();
 
-#if OSD_ENABLED == ENABLED
-    osd.init();
-#endif
+    // #if OSD_ENABLED == ENABLED
+    // osd.init();
+    // #endif
 
 #if LOGGING_ENABLED == ENABLED
     log_init();
@@ -80,7 +80,7 @@ void Rover::init_ardupilot()
 #endif
 
     // init beacons used for non-gps position estimation
-    g2.beacon.init();
+    // g2.beacon.init();
 
     // and baro for EKF
     barometer.set_log_baro_bit(MASK_LOG_IMU);

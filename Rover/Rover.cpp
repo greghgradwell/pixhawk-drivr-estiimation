@@ -81,9 +81,9 @@ const AP_Scheduler::Task Rover::scheduler_tasks[] = {
 #if HAL_PROXIMITY_ENABLED
     SCHED_TASK_CLASS(AP_Proximity, &rover.g2.proximity, update, 50, 200, 27),
 #endif
-    SCHED_TASK_CLASS(AP_WindVane, &rover.g2.windvane, update, 20, 100, 30),
-    SCHED_TASK_CLASS(AC_Fence, &rover.g2.fence, update, 10, 100, 33),
-    SCHED_TASK(update_wheel_encoder, 50, 200, 36),
+    // SCHED_TASK_CLASS(AP_WindVane, &rover.g2.windvane, update, 20, 100, 30),
+    // SCHED_TASK_CLASS(AC_Fence, &rover.g2.fence, update, 10, 100, 33),
+    // SCHED_TASK(update_wheel_encoder, 50, 200, 36),
     SCHED_TASK(update_compass, 10, 200, 39),
     SCHED_TASK(update_logging1, 10, 200, 45),
     SCHED_TASK(update_logging2, 10, 200, 48),
@@ -92,7 +92,7 @@ const AP_Scheduler::Task Rover::scheduler_tasks[] = {
     SCHED_TASK_CLASS(RC_Channels, (RC_Channels *)&rover.g2.rc_channels, read_mode_switch, 7, 200, 57),
     SCHED_TASK_CLASS(RC_Channels, (RC_Channels *)&rover.g2.rc_channels, read_aux_all, 10, 200, 60),
     SCHED_TASK_CLASS(AP_BattMonitor, &rover.battery, read, 10, 300, 63),
-    SCHED_TASK_CLASS(AP_ServoRelayEvents, &rover.ServoRelayEvents, update_events, 50, 200, 66),
+// SCHED_TASK_CLASS(AP_ServoRelayEvents, &rover.ServoRelayEvents, update_events, 50, 200, 66),
 #if GRIPPER_ENABLED == ENABLED
     SCHED_TASK_CLASS(AP_Gripper, &rover.g2.gripper, update, 10, 75, 69),
 #endif
@@ -104,9 +104,9 @@ const AP_Scheduler::Task Rover::scheduler_tasks[] = {
     SCHED_TASK_CLASS(AP_Camera, &rover.camera, update, 50, 200, 78),
 #endif
     SCHED_TASK(gcs_failsafe_check, 10, 200, 81),
-    SCHED_TASK(fence_check, 10, 200, 84),
+    // SCHED_TASK(fence_check, 10, 200, 84),
     SCHED_TASK(ekf_check, 10, 100, 87),
-    SCHED_TASK_CLASS(ModeSmartRTL, &rover.mode_smartrtl, save_position, 3, 200, 90),
+    // SCHED_TASK_CLASS(ModeSmartRTL, &rover.mode_smartrtl, save_position, 3, 200, 90),
     SCHED_TASK_CLASS(AP_Notify, &rover.notify, update, 50, 300, 93),
     SCHED_TASK(one_second_loop, 1, 1500, 96),
 #if HAL_SPRAYER_ENABLED
@@ -125,8 +125,8 @@ const AP_Scheduler::Task Rover::scheduler_tasks[] = {
 #if STATS_ENABLED == ENABLED
     SCHED_TASK(stats_update, 1, 200, 120),
 #endif
-    SCHED_TASK(crash_check, 10, 200, 123),
-    SCHED_TASK(cruise_learn_update, 50, 200, 126),
+// SCHED_TASK(crash_check, 10, 200, 123),
+// SCHED_TASK(cruise_learn_update, 50, 200, 126),
 #if ADVANCED_FAILSAFE == ENABLED
     SCHED_TASK(afs_fs_check, 10, 200, 129),
 #endif
