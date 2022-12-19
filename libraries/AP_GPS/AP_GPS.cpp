@@ -566,19 +566,19 @@ void AP_GPS::send_blob_start(uint8_t instance)
         return;
     }
 
-#if GPS_MOVING_BASELINE
-    if ((_type[instance] == GPS_TYPE_UBLOX_RTK_BASE ||
-         _type[instance] == GPS_TYPE_UBLOX_RTK_ROVER) &&
-        !option_set(DriverOptions::UBX_MBUseUart2)) {
-        // we use 460800 when doing moving baseline as we need
-        // more bandwidth. We don't do this if using UART2, as
-        // in that case the RTCMv3 data doesn't go over the
-        // link to the flight controller
-        static const char blob[] = UBLOX_SET_BINARY_460800;
-        send_blob_start(instance, blob, sizeof(blob));
-        return;
-    }
-#endif
+    // #if GPS_MOVING_BASELINE
+    //     if ((_type[instance] == GPS_TYPE_UBLOX_RTK_BASE ||
+    //          _type[instance] == GPS_TYPE_UBLOX_RTK_ROVER) &&
+    //         !option_set(DriverOptions::UBX_MBUseUart2)) {
+    //         // we use 460800 when doing moving baseline as we need
+    //         // more bandwidth. We don't do this if using UART2, as
+    //         // in that case the RTCMv3 data doesn't go over the
+    //         // link to the flight controller
+    //         static const char blob[] = UBLOX_SET_BINARY_460800;
+    //         send_blob_start(instance, blob, sizeof(blob));
+    //         return;
+    //     }
+    // #endif
 
 #if AP_GPS_NMEA_ENABLED
     if (_type[instance] == GPS_TYPE_HEMI) {
@@ -744,11 +744,12 @@ void AP_GPS::detect_instance(uint8_t instance)
             new_gps = new AP_GPS_UBLOX(*this, state[instance], _port[instance], GPS_ROLE_NORMAL);
         }
 
-        const uint32_t ublox_mb_required_baud = option_set(DriverOptions::UBX_MBUseUart2)?230400:460800;
+        const uint32_t ublox_mb_min_required_baud = 230400; // option_set(DriverOptions::UBX_MBUseUart2)?230400:460800;
         if ((_type[instance] == GPS_TYPE_UBLOX_RTK_BASE ||
              _type[instance] == GPS_TYPE_UBLOX_RTK_ROVER) &&
-            _baudrates[dstate->current_baud] == ublox_mb_required_baud &&
-            AP_GPS_UBLOX::_detect(dstate->ublox_detect_state, data)) {
+            _baudrates[dstate->current_baud] >= ublox_mb_min_required_baud &&
+            AP_GPS_UBLOX::_detect(dstate->ublox_detect_state, data))
+        {
             GPS_Role role;
             if (_type[instance] == GPS_TYPE_UBLOX_RTK_BASE) {
                 role = GPS_ROLE_MB_BASE;
