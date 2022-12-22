@@ -566,19 +566,20 @@ void AP_GPS::send_blob_start(uint8_t instance)
         return;
     }
 
-    // #if GPS_MOVING_BASELINE
-    //     if ((_type[instance] == GPS_TYPE_UBLOX_RTK_BASE ||
-    //          _type[instance] == GPS_TYPE_UBLOX_RTK_ROVER) &&
-    //         !option_set(DriverOptions::UBX_MBUseUart2)) {
-    //         // we use 460800 when doing moving baseline as we need
-    //         // more bandwidth. We don't do this if using UART2, as
-    //         // in that case the RTCMv3 data doesn't go over the
-    //         // link to the flight controller
-    //         static const char blob[] = UBLOX_SET_BINARY_460800;
-    //         send_blob_start(instance, blob, sizeof(blob));
-    //         return;
-    //     }
-    // #endif
+#if GPS_MOVING_BASELINE
+    if ((_type[instance] == GPS_TYPE_UBLOX_RTK_BASE ||
+         _type[instance] == GPS_TYPE_UBLOX_RTK_ROVER))
+    {   // &&
+        //         !option_set(DriverOptions::UBX_MBUseUart2)) {
+        //         // we use 460800 when doing moving baseline as we need
+        //         // more bandwidth. We don't do this if using UART2, as
+        //         // in that case the RTCMv3 data doesn't go over the
+        //         // link to the flight controller
+        //         static const char blob[] = UBLOX_SET_BINARY_460800;
+        //         send_blob_start(instance, blob, sizeof(blob));
+        return;
+    }
+#endif
 
 #if AP_GPS_NMEA_ENABLED
     if (_type[instance] == GPS_TYPE_HEMI) {

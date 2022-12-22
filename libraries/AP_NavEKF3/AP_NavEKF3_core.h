@@ -1254,6 +1254,7 @@ private:
 #endif
 
     // GPS yaw sensor fusion
+    uint32_t static_vehicle_count = 0;
     uint32_t yawMeasTime_ms;            // system time GPS yaw angle was last input to the data buffer
     EKF_obs_buffer_t<yaw_elements> storedYawAng;    // GPS yaw angle buffer
     yaw_elements yawAngDataNew;         // GPS yaw angle at the current time horizon

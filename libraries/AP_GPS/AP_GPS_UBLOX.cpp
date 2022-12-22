@@ -1397,22 +1397,23 @@ AP_GPS_UBLOX::_parse_gps(void)
             // note that we require the yaw to come from a fixed solution, not a float solution
             // yaw from a float solution would only be acceptable with a very large separation between
             // GPS modules
-            const uint32_t valid_mask = static_cast<uint32_t>(RELPOSNED::relPosHeadingValid) |
-                                        static_cast<uint32_t>(RELPOSNED::relPosValid) |
-                                        static_cast<uint32_t>(RELPOSNED::gnssFixOK) |
-                                        static_cast<uint32_t>(RELPOSNED::isMoving) |
-                                        static_cast<uint32_t>(RELPOSNED::carrSolnFixed);
-            const uint32_t invalid_mask = static_cast<uint32_t>(RELPOSNED::refPosMiss) |
-                                          static_cast<uint32_t>(RELPOSNED::refObsMiss) |
-                                          static_cast<uint32_t>(RELPOSNED::carrSolnFloat);
+        const uint32_t valid_mask = static_cast<uint32_t>(RELPOSNED::relPosHeadingValid) |
+                                    static_cast<uint32_t>(RELPOSNED::relPosValid) |
+                                    static_cast<uint32_t>(RELPOSNED::gnssFixOK) |
+                                    // static_cast<uint32_t>(RELPOSNED::isMoving) |
+                                    static_cast<uint32_t>(RELPOSNED::carrSolnFixed);
+        const uint32_t invalid_mask = static_cast<uint32_t>(RELPOSNED::refPosMiss) |
+                                      static_cast<uint32_t>(RELPOSNED::refObsMiss) |
+                                      static_cast<uint32_t>(RELPOSNED::carrSolnFloat);
 
-            _check_new_itow(_buffer.relposned.iTOW);
-            if (_buffer.relposned.iTOW != _last_relposned_itow+200) {
-                // useful for looking at packet loss on links
-                MB_Debug("RELPOSNED ITOW %u %u\n", unsigned(_buffer.relposned.iTOW), unsigned(_last_relposned_itow));
-            }
+        _check_new_itow(_buffer.relposned.iTOW);
+        if (_buffer.relposned.iTOW != _last_relposned_itow + 200)
+        {
+            // useful for looking at packet loss on links
+            MB_Debug("RELPOSNED ITOW %u %u\n", unsigned(_buffer.relposned.iTOW), unsigned(_last_relposned_itow));
+        }
             _last_relposned_itow = _buffer.relposned.iTOW;
-            MB_Debug("RELPOSNED flags: %lx valid: %lx invalid: %lx\n", _buffer.relposned.flags, valid_mask, invalid_mask);
+            // gcs().send_text(MAV_SEVERITY_CRITICAL, "RELPOSNED flags: %lx valid: %lx invalid: %lx\n", _buffer.relposned.flags, valid_mask, invalid_mask);
             if (((_buffer.relposned.flags & valid_mask) == valid_mask) &&
                 ((_buffer.relposned.flags & invalid_mask) == 0)) {
                 if (calculate_moving_base_yaw(_buffer.relposned.relPosHeading * 1e-5,
@@ -1421,6 +1422,7 @@ AP_GPS_UBLOX::_parse_gps(void)
                     state.have_gps_yaw_accuracy = true;
                     state.gps_yaw_accuracy = _buffer.relposned.accHeading * 1e-5;
                     _last_relposned_ms = AP_HAL::millis();
+                    // gcs().send_text(MAV_SEVERITY_CRITICAL, "calc suc");
                 }
                 state.relPosHeading = _buffer.relposned.relPosHeading * 1e-5;
                 state.relPosLength  = _buffer.relposned.relPosLength * 0.01;
@@ -1428,6 +1430,8 @@ AP_GPS_UBLOX::_parse_gps(void)
                 state.accHeading    = _buffer.relposned.accHeading * 1e-5;
                 state.relposheading_ts = AP_HAL::millis();
             } else {
+                gcs().send_text(MAV_SEVERITY_CRITICAL, "inv flag");
+
                 state.have_gps_yaw_accuracy = false;
             }
         }
@@ -1950,7 +1954,7 @@ bool AP_GPS_UBLOX::get_lag(float &lag_sec) const
     case UBLOX_M9:
         // F9 lag not verified yet from flight log, but likely to be at least
         // as good as M8
-        lag_sec = 0.12f;
+        lag_sec = 0.02f;
 #if GPS_MOVING_BASELINE
         if (role == AP_GPS::GPS_ROLE_MB_BASE ||
             role == AP_GPS::GPS_ROLE_MB_ROVER) {

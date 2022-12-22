@@ -30,7 +30,18 @@ void NavEKF3_core::controlFilterModes()
 
     // Set the type of inertial navigation aiding used
     setAidingMode();
-
+    // if (!motorsArmed)
+    // {
+    //     if (static_vehicle_count < 200)
+    //     {
+    //         ++static_vehicle_count;
+    //         if (static_vehicle_count == 200)
+    //         {
+    //             motorsArmed = true;
+    //             onGround = true;
+    //         }
+    //     }
+    // }
 }
 
 /*
@@ -609,7 +620,8 @@ bool NavEKF3_core::assume_zero_sideslip(void) const
     // we don't assume zero sideslip for ground vehicles as EKF could
     // be quite sensitive to a rapid spin of the ground vehicle if
     // traction is lost
-    return dal.get_fly_forward() && dal.get_vehicle_class() != AP_DAL::VehicleClass::GROUND;
+    // return dal.get_fly_forward() && dal.get_vehicle_class() != AP_DAL::VehicleClass::GROUND;
+    return true;
 }
 
 // sets the local NED origin using a LLH location (latitude, longitude, height)

@@ -180,10 +180,11 @@ void NavEKF3_core::realignYawGPS()
 void NavEKF3_core::alignYawAngle(const yaw_elements &yawAngData)
 {
     // update quaternion states and covariances
+
     resetQuatStateYawOnly(yawAngData.yawAng, sq(MAX(yawAngData.yawAngErr, 1.0e-2)), yawAngData.order);
 
     // send yaw alignment information to console
-    GCS_SEND_TEXT(MAV_SEVERITY_INFO, "EKF3 IMU%u yaw aligned",(unsigned)imu_index);
+    GCS_SEND_TEXT(MAV_SEVERITY_CRITICAL, "EKF3 IMU%u yaw aligned", (unsigned)imu_index);
 }
 
 /********************************************************
@@ -226,9 +227,12 @@ void NavEKF3_core::SelectMagFusion()
          yaw_source != AP_NavEKF_Source::SourceYaw::GPS &&
          yaw_source != AP_NavEKF_Source::SourceYaw::GPS_COMPASS_FALLBACK &&
          yaw_source != AP_NavEKF_Source::SourceYaw::EXTNAV)) {
+        gcs().send_text(MAV_SEVERITY_INFO, "check4reset");
 
         // because this type of reset event is not as time critical, require a continuous history of valid estimates
         if ((!yawAlignComplete || yaw_source_reset) && EKFGSF_yaw_valid_count >= GSF_YAW_VALID_HISTORY_THRESHOLD) {
+            gcs().send_text(MAV_SEVERITY_INFO, "emerg reset");
+
             const bool emergency_reset = (yaw_source != AP_NavEKF_Source::SourceYaw::GSF);
             yawAlignComplete = EKFGSF_resetMainFilterYaw(emergency_reset);
             yaw_source_reset = false;
@@ -261,24 +265,35 @@ void NavEKF3_core::SelectMagFusion()
     // Handle case where we are using GPS yaw sensor instead of a magnetomer
     if (yaw_source == AP_NavEKF_Source::SourceYaw::GPS || yaw_source == AP_NavEKF_Source::SourceYaw::GPS_COMPASS_FALLBACK) {
         bool have_fused_gps_yaw = false;
+        // gcs().send_text(MAV_SEVERITY_CRITICAL, "check recall: %lu", imuDataDelayed.time_ms);
+
         if (storedYawAng.recall(yawAngDataDelayed,imuDataDelayed.time_ms)) {
+            // gcs().send_text(MAV_SEVERITY_CRITICAL, "recalled");
+
             if (tiltAlignComplete && (!yawAlignComplete || yaw_source_reset))
             {
+                gcs().send_text(MAV_SEVERITY_CRITICAL, "try aYA: %.1f", yawAngDataDelayed.yawAng);
                 alignYawAngle(yawAngDataDelayed);
                 yaw_source_reset = false;
                 have_fused_gps_yaw = true;
                 lastSynthYawTime_ms = imuSampleTime_ms;
                 last_gps_yaw_fuse_ms = imuSampleTime_ms;
+                gcs().send_text(MAV_SEVERITY_CRITICAL, "yaw align: %.1f", yawAngDataDelayed.yawAng);
             }
             else if (tiltAlignComplete && yawAlignComplete)
             {
                 have_fused_gps_yaw = fuseEulerYaw(yawFusionMethod::GPS);
+                // gcs().send_text(MAV_SEVERITY_CRITICAL, "fuseEY: %.1f", yawAngDataNew.yawAng*RAD_TO_DEG);
+
                 if (have_fused_gps_yaw) {
+                    // gcs().send_text(MAV_SEVERITY_CRITICAL, "fused: %.1f", yawAngDataNew.yawAng * RAD_TO_DEG);
                     last_gps_yaw_fuse_ms = imuSampleTime_ms;
                 }
             }
             last_gps_yaw_ms = imuSampleTime_ms;
         } else if (tiltAlignComplete && !yawAlignComplete) {
+            // gcs().send_text(MAV_SEVERITY_CRITICAL, "tA no yA");
+
             // External yaw sources can take significant time to start providing yaw data so
             // wuile waiting, fuse a 'fake' yaw observation at 7Hz to keeop the filter stable
             if(imuSampleTime_ms - lastSynthYawTime_ms > 140) {
@@ -295,11 +310,18 @@ void NavEKF3_core::SelectMagFusion()
             }
         } else if (tiltAlignComplete && yawAlignComplete && onGround && imuSampleTime_ms - last_gps_yaw_fuse_ms > 10000) {
             // handle scenario where we were using GPS yaw previously, but the yaw fusion has timed out.
+            gcs().send_text(MAV_SEVERITY_CRITICAL, "timeout");
             yaw_source_reset = true;
         }
+        // else
+        // {
+        // gcs().send_text(MAV_SEVERITY_CRITICAL, "recall bounce");
+        // }
 
         if (yaw_source == AP_NavEKF_Source::SourceYaw::GPS) {
             // no fallback
+            // gcs().send_text(MAV_SEVERITY_CRITICAL, "fucked");
+
             return;
         }
 
@@ -1540,16 +1562,22 @@ bool NavEKF3_core::EKFGSF_resetMainFilterYaw(bool emergency_reset)
     // Don't do a reset unless permitted by the EK3_GSF_USE_MASK and EK3_GSF_RUN_MASK parameter masks
     if ((yawEstimator == nullptr)
         || !(frontend->_gsfUseMask & (1U<<core_index))) {
+        gcs().send_text(MAV_SEVERITY_INFO, "yE is nullptr");
         return false;
     };
 
     // limit the number of emergency resets
     if (emergency_reset && (EKFGSF_yaw_reset_count >= frontend->_gsfResetMaxCount)) {
+        gcs().send_text(MAV_SEVERITY_INFO, "too many resets");
         return false;
     }
 
     ftype yawEKFGSF, yawVarianceEKFGSF;
+    gcs().send_text(MAV_SEVERITY_INFO, "try get yaw");
+
     if (EKFGSF_getYaw(yawEKFGSF, yawVarianceEKFGSF)) {
+        gcs().send_text(MAV_SEVERITY_INFO, "ekfgsf get yaw");
+
         // keep roll and pitch and reset yaw
         rotationOrder order;
         bestRotationOrder(order);
@@ -1596,6 +1624,7 @@ bool NavEKF3_core::EKFGSF_getYaw(ftype &yaw, ftype &yawVariance) const
 {
     // return immediately if no yaw estimator
     if (yawEstimator == nullptr) {
+
         return false;
     }
 

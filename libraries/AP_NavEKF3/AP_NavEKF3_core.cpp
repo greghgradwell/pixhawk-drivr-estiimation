@@ -257,9 +257,9 @@ void NavEKF3_core::InitialiseVariables()
     velTimeout = true;
     memset(&faultStatus, 0, sizeof(faultStatus));
     hgtRate = 0.0f;
-    onGround = true;
+    onGround = true; // Greg false
     prevOnGround = true;
-    inFlight = false;
+    inFlight = false; // Greg true
     prevInFlight = false;
     manoeuvring = false;
     inhibitWindStates = true;
@@ -286,7 +286,7 @@ void NavEKF3_core::InitialiseVariables()
     posErrintegral.zero();
     gpsGoodToAlign = false;
     gpsIsInUse = false;
-    motorsArmed = false;
+    motorsArmed = true;
     prevMotorsArmed = false;
     memset(&gpsCheckStatus, 0, sizeof(gpsCheckStatus));
     gpsSpdAccPass = false;

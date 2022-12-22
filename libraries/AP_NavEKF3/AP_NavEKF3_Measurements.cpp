@@ -717,6 +717,7 @@ void NavEKF3_core::readGpsYawData()
         // normalised yaw innovations
         const ftype min_yaw_accuracy_deg = 5.0f;
         yaw_accuracy_deg = MAX(yaw_accuracy_deg, min_yaw_accuracy_deg);
+        // gcs().send_text(MAV_SEVERITY_CRITICAL, "read yaw stat good: %.1f/%.1f", yaw_deg, yaw_accuracy_deg);
         writeEulerYawAngle(radians(yaw_deg), radians(yaw_accuracy_deg), yaw_time_ms, 2);
     }
 }
@@ -991,6 +992,7 @@ void NavEKF3_core::writeEulerYawAngle(float yawAngle, float yawAngleErr, uint32_
     // limit update rate to maximum allowed by sensor buffers and fusion process
     // don't try to write to buffer until the filter has been initialised
     if (((timeStamp_ms - yawMeasTime_ms) < frontend->sensorIntervalMin_ms) || !statesInitialised) {
+        gcs().send_text(MAV_SEVERITY_CRITICAL, "ts bad");
         return;
     }
 
@@ -1001,10 +1003,13 @@ void NavEKF3_core::writeEulerYawAngle(float yawAngle, float yawAngleErr, uint32_
     } else if (type == 1) {
         yawAngDataNew.order = rotationOrder::TAIT_BRYAN_312;
     } else {
+        gcs().send_text(MAV_SEVERITY_CRITICAL, "order bad: %d", (int)yawAngDataNew.order);
         return;
     }
     yawAngDataNew.time_ms = timeStamp_ms;
     storedYawAng.push(yawAngDataNew);
+
+    // gcs().send_text(MAV_SEVERITY_CRITICAL, "push yaw[%lu:%lu/%lu]: %.1f", ++greg_count, yawMeasTime_ms, timeStamp_ms, yawAngle);
 
     yawMeasTime_ms = timeStamp_ms;
 }

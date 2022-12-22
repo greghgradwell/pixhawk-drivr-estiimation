@@ -337,6 +337,7 @@ void NavEKF3_core::detectFlight()
             }
         } else {
             // to a high certainty we are not flying
+            // GReg
             onGround = true;
             inFlight = false;
         }
@@ -348,8 +349,8 @@ void NavEKF3_core::detectFlight()
         if (motorsArmed) {
             onGround = false;
         } else {
-            inFlight = false;
-            onGround = true;
+            // inFlight = false;
+            // onGround = true;
         }
 
         if (!onGround) {

@@ -1995,6 +1995,7 @@ void NavEKF3::writeDefaultAirSpeed(float airspeed, float uncertainty)
 bool NavEKF3::yawAlignmentComplete(void) const
 {
     if (!core) {
+        gcs().send_text(MAV_SEVERITY_INFO, "not core");
         return false;
     }
     return core[primary].have_aligned_yaw();
