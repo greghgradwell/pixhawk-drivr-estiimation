@@ -374,28 +374,28 @@ AP_GPS_UBLOX::_request_next_config(void)
         }
         break;
     case STEP_RTK_MOVBASE:
-#if GPS_MOVING_BASELINE
-        if (supports_F9_config()) {
-            static_assert(sizeof(active_config.done_mask)*8 >= ARRAY_SIZE(config_MB_Base_uart1), "done_mask too small, base1");
-            static_assert(sizeof(active_config.done_mask)*8 >= ARRAY_SIZE(config_MB_Base_uart2), "done_mask too small, base2");
-            static_assert(sizeof(active_config.done_mask)*8 >= ARRAY_SIZE(config_MB_Rover_uart1), "done_mask too small, rover1");
-            static_assert(sizeof(active_config.done_mask)*8 >= ARRAY_SIZE(config_MB_Rover_uart2), "done_mask too small, rover2");
-            if (role == AP_GPS::GPS_ROLE_MB_BASE) {
-                const config_list *list = mb_use_uart2()?config_MB_Base_uart2:config_MB_Base_uart1;
-                uint8_t list_length = mb_use_uart2()?ARRAY_SIZE(config_MB_Base_uart2):ARRAY_SIZE(config_MB_Base_uart1);
-                if (!_configure_config_set(list, list_length, CONFIG_RTK_MOVBASE)) {
-                    _next_message--;
-                }
-            }
-            if (role == AP_GPS::GPS_ROLE_MB_ROVER) {
-                const config_list *list = mb_use_uart2()?config_MB_Rover_uart2:config_MB_Rover_uart1;
-                uint8_t list_length = mb_use_uart2()?ARRAY_SIZE(config_MB_Rover_uart2):ARRAY_SIZE(config_MB_Rover_uart1);
-                if (!_configure_config_set(list, list_length, CONFIG_RTK_MOVBASE)) {
-                    _next_message--;
-                }
-            }
-        }
-#endif
+        // #if GPS_MOVING_BASELINE
+        //         if (supports_F9_config()) {
+        //             static_assert(sizeof(active_config.done_mask)*8 >= ARRAY_SIZE(config_MB_Base_uart1), "done_mask too small, base1");
+        //             static_assert(sizeof(active_config.done_mask)*8 >= ARRAY_SIZE(config_MB_Base_uart2), "done_mask too small, base2");
+        //             static_assert(sizeof(active_config.done_mask)*8 >= ARRAY_SIZE(config_MB_Rover_uart1), "done_mask too small, rover1");
+        //             static_assert(sizeof(active_config.done_mask)*8 >= ARRAY_SIZE(config_MB_Rover_uart2), "done_mask too small, rover2");
+        //             if (role == AP_GPS::GPS_ROLE_MB_BASE) {
+        //                 const config_list *list = mb_use_uart2()?config_MB_Base_uart2:config_MB_Base_uart1;
+        //                 uint8_t list_length = mb_use_uart2()?ARRAY_SIZE(config_MB_Base_uart2):ARRAY_SIZE(config_MB_Base_uart1);
+        //                 if (!_configure_config_set(list, list_length, CONFIG_RTK_MOVBASE)) {
+        //                     _next_message--;
+        //                 }
+        //             }
+        //             if (role == AP_GPS::GPS_ROLE_MB_ROVER) {
+        //                 const config_list *list = mb_use_uart2()?config_MB_Rover_uart2:config_MB_Rover_uart1;
+        //                 uint8_t list_length = mb_use_uart2()?ARRAY_SIZE(config_MB_Rover_uart2):ARRAY_SIZE(config_MB_Rover_uart1);
+        //                 if (!_configure_config_set(list, list_length, CONFIG_RTK_MOVBASE)) {
+        //                     _next_message--;
+        //                 }
+        //             }
+        //         }
+        // #endif
         break;
     case STEP_TIM_TM2:
 #if UBLOX_TIM_TM2_LOGGING
@@ -1397,20 +1397,21 @@ AP_GPS_UBLOX::_parse_gps(void)
             // note that we require the yaw to come from a fixed solution, not a float solution
             // yaw from a float solution would only be acceptable with a very large separation between
             // GPS modules
-            const uint32_t valid_mask = static_cast<uint32_t>(RELPOSNED::relPosHeadingValid) |
-                                        static_cast<uint32_t>(RELPOSNED::relPosValid) |
-                                        static_cast<uint32_t>(RELPOSNED::gnssFixOK) |
-                                        static_cast<uint32_t>(RELPOSNED::isMoving) |
-                                        static_cast<uint32_t>(RELPOSNED::carrSolnFixed);
-            const uint32_t invalid_mask = static_cast<uint32_t>(RELPOSNED::refPosMiss) |
-                                          static_cast<uint32_t>(RELPOSNED::refObsMiss) |
-                                          static_cast<uint32_t>(RELPOSNED::carrSolnFloat);
+        const uint32_t valid_mask = static_cast<uint32_t>(RELPOSNED::relPosHeadingValid) |
+                                    static_cast<uint32_t>(RELPOSNED::relPosValid) |
+                                    static_cast<uint32_t>(RELPOSNED::gnssFixOK) |
+                                    // static_cast<uint32_t>(RELPOSNED::isMoving) |
+                                    static_cast<uint32_t>(RELPOSNED::carrSolnFixed);
+        const uint32_t invalid_mask = static_cast<uint32_t>(RELPOSNED::refPosMiss) |
+                                      static_cast<uint32_t>(RELPOSNED::refObsMiss) |
+                                      static_cast<uint32_t>(RELPOSNED::carrSolnFloat);
 
-            _check_new_itow(_buffer.relposned.iTOW);
-            if (_buffer.relposned.iTOW != _last_relposned_itow+200) {
-                // useful for looking at packet loss on links
-                MB_Debug("RELPOSNED ITOW %u %u\n", unsigned(_buffer.relposned.iTOW), unsigned(_last_relposned_itow));
-            }
+        _check_new_itow(_buffer.relposned.iTOW);
+        if (_buffer.relposned.iTOW != _last_relposned_itow + 200)
+        {
+            // useful for looking at packet loss on links
+            MB_Debug("RELPOSNED ITOW %u %u\n", unsigned(_buffer.relposned.iTOW), unsigned(_last_relposned_itow));
+        }
             _last_relposned_itow = _buffer.relposned.iTOW;
             MB_Debug("RELPOSNED flags: %lx valid: %lx invalid: %lx\n", _buffer.relposned.flags, valid_mask, invalid_mask);
             if (((_buffer.relposned.flags & valid_mask) == valid_mask) &&
