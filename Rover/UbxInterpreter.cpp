@@ -10,9 +10,9 @@ UbxInterpreter::UbxInterpreter()
     tx_buffer_[1] = START_BYTE_2;
 }
 
-void UbxInterpreter::packPixhawkMessage(const Vector3f &attitude, const Location &loc, const uint8_t fix)
+void UbxInterpreter::packPixhawkMessage(const Vector3f &attitude, const Location &loc, const float speed_mps, const uint8_t fix)
 {
-    setHeaderValues(0x11, 0x00, 15);
+    setHeaderValues(0x11, 0x00, 17);
     // Vector3f attitude;
     // NavEKF3::getEulerAngles(attitude);
     // Location loc;
@@ -22,7 +22,8 @@ void UbxInterpreter::packPixhawkMessage(const Vector3f &attitude, const Location
     packValue(static_cast<uint16_t>(attitude.z * kRad2DegE2), 4);
     packValue(loc.lat, 6);
     packValue(loc.lng, 10);
-    packValue(fix, 14);
+    packValue(static_cast<int16_t>(speed_mps * 1000), 14);
+    packValue(fix, 16);
     prepareMessage();
 }
 

@@ -42,7 +42,7 @@ class UbxInterpreter
 public:
     UbxInterpreter();
     // ---------------- TX -------------------
-    void packPixhawkMessage(const Vector3f &attitude, const Location &loc, const uint8_t fix);
+    void packPixhawkMessage(const Vector3f &attitude, const Location &loc, const float speed_mps, const uint8_t fix);
     void setHeaderValues(uint8_t msg_class, uint8_t msg_id, uint16_t payload_length);
     void prepareMessage();
     int writeMessage(AP_HAL::UARTDriver *uart);

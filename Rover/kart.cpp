@@ -21,7 +21,7 @@ static void setup_uart(AP_HAL::UARTDriver *uart, const uint32_t baud)
 void Rover::setup_telem()
 {
     // hal.scheduler->delay(1000);
-    setup_uart(hal.serial(2), 230400);
+    setup_uart(hal.serial(2), 115200);
     _kart_port_ready = true;
 }
 
@@ -41,11 +41,8 @@ void Rover::send_kart_message(void)
         // Location loc;
         // ahrs.get_secondary_position(loc);
         uint8_t fix = static_cast<uint8_t>(rover.gps.status(1));
-        // if (fix > 0)
-        // {
-        _ubx.packPixhawkMessage(attitude, current_loc, fix);
+        _ubx.packPixhawkMessage(attitude, current_loc, ground_speed, fix);
         _ubx.writeMessage(hal.serial(2));
         // hal.console->printf("yaw: %.1f\r\n", attitude.z * 180.f / M_PI);
-            // }
     }
 }
