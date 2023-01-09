@@ -223,6 +223,8 @@ private:
 
     UbxInterpreter _ubx;
     bool _kart_port_ready = false;
+    int _low_freq_count = 0;
+    const int kLowFreqCountMax = 100;
 
     // cruise throttle and speed learning
     typedef struct {

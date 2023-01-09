@@ -41,8 +41,19 @@ void Rover::send_kart_message(void)
         // Location loc;
         // ahrs.get_secondary_position(loc);
         uint8_t fix = static_cast<uint8_t>(rover.gps.status(1));
-        _ubx.packPixhawkMessage(attitude, current_loc, ground_speed, fix);
+        _ubx.packVehicleUpdateMessage(attitude, current_loc, ground_speed, fix);
         _ubx.writeMessage(hal.serial(2));
+
+        if (++_low_freq_count == kLowFreqCountMax)
+        {
+            _low_freq_count = 0;
+            float h_acc_m = 0;
+            float v_acc_m = 0;
+            rover.gps.horizontal_accuracy(h_acc_m);
+            rover.gps.vertical_accuracy(v_acc_m);
+            _ubx.packGpsStatusMessage(h_acc_m, v_acc_m, rover.gps.num_sats());
+            _ubx.writeMessage(hal.serial(2));
+        }
         // hal.console->printf("yaw: %.1f\r\n", attitude.z * 180.f / M_PI);
     }
 }

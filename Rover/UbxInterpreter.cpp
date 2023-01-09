@@ -10,11 +10,11 @@ UbxInterpreter::UbxInterpreter()
     tx_buffer_[1] = START_BYTE_2;
 }
 
-void UbxInterpreter::packPixhawkMessage(const Vector3f &attitude, const Location &loc, const float speed_mps, const uint8_t fix)
+void UbxInterpreter::packVehicleUpdateMessage(const Vector3f &attitude, const Location &loc, const float speed_mps, const uint8_t fix)
 {
     setHeaderValues(0x11, 0x00, 17);
     // Vector3f attitude;
-    // NavEKF3::getEulerAngles(attitude);
+    // NavEKF3::getEulerAngles(attitude)
     // Location loc;
     // NavEKF3::getLLH(loc);
     packValue(static_cast<int16_t>(attitude.x * kRad2DegE2), 0);
@@ -24,6 +24,19 @@ void UbxInterpreter::packPixhawkMessage(const Vector3f &attitude, const Location
     packValue(loc.lng, 10);
     packValue(static_cast<int16_t>(speed_mps * 1000), 14);
     packValue(fix, 16);
+    prepareMessage();
+}
+
+void UbxInterpreter::packGpsStatusMessage(float h_acc_m, float v_acc_m, uint8_t num_sats)
+{
+    setHeaderValues(0x11, 0x01, 5);
+    // Vector3f attitude;
+    // NavEKF3::getEulerAngles(attitude)
+    // Location loc;
+    // NavEKF3::getLLH(loc);
+    packValue(static_cast<uint16_t>(h_acc_m * 1e2), 0);
+    packValue(static_cast<uint16_t>(v_acc_m * 1e2), 2);
+    packValue(num_sats, 4);
     prepareMessage();
 }
 
